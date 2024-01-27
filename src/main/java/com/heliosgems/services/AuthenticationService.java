@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthenticationService {
     @Autowired
     private AccountRepo accountRepo;
     @Autowired
@@ -56,18 +56,18 @@ public class AuthService {
         return null;
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-        User user = userRepository.findByUsername(authenticationRequest.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        String jwtToken = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-        revokeAllUserToken(user);
-        saveUserToken(user, jwtToken);
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
-    }
+//    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
+//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+//        User user = userRepository.findByUsername(authenticationRequest.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//        String jwtToken = jwtService.generateToken(user);
+//        String refreshToken = jwtService.generateRefreshToken(user);
+//        revokeAllUserToken(user);
+//        saveUserToken(user, jwtToken);
+//        return AuthenticationResponse.builder()
+//                .accessToken(jwtToken)
+//                .refreshToken(refreshToken)
+//                .build();
+//    }
 
     public void signoutAccount() {
 
