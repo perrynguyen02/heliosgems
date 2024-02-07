@@ -1,5 +1,6 @@
 package com.heliosgems.model.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -35,10 +36,10 @@ public class Account implements UserDetails {
     @OneToMany(mappedBy = "account")
     private List<Token> tokens;
 
-    @CreationTimestamp
-    private Date create_at;
-    @UpdateTimestamp
-    private Date update_at;
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<Address> addresses;
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
