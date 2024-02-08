@@ -8,6 +8,7 @@ import java.util.UUID;
 @Builder
 @Data
 public class AuthenticationResponse {
-    UUID uuid;
-    String role;
+    private UUID uuid;
+    private String role;
+    private String description;
 }

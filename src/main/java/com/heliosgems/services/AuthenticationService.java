@@ -2,9 +2,11 @@ package com.heliosgems.services;
 
 import com.heliosgems.config.jwt.JwtService;
 import com.heliosgems.model.dto.UserDto;
+import com.heliosgems.model.entity.Token;
 import com.heliosgems.model.entity.User;
 import com.heliosgems.model.request.AuthenticationRequest;
 import com.heliosgems.model.response.AuthenticationResponse;
+import com.heliosgems.repository.TokenRepo;
 import com.heliosgems.repository.UserRepo;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,6 +26,8 @@ import java.util.List;
 public class AuthenticationService {
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private TokenRepo tokenRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -39,8 +42,8 @@ public class AuthenticationService {
         return userRepo.findAll();
     }
 
-    public void signupAccount(UserDto userDto) {
-        var account = User.builder()
+    public AuthenticationResponse register(UserDto userDto) {
+        var user = User.builder()
                 .username(userDto.getUsername())
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .firstname(userDto.getFirstname())
@@ -49,15 +52,13 @@ public class AuthenticationService {
                 .phoneNumber(userDto.getPhoneNumber())
                 .role("Customer")
                 .build();
-        userRepo.save(account);
-    }
+        var userResponse = userRepo.save(user);
 
-    public String signinAccount(UserDto userDto) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
-        var user = userRepo.findByUsername(userDto.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        String jwtToken = jwtService.generateToken(user);
-
-        return null;
+        return AuthenticationResponse.builder()
+                .uuid(userResponse.getUuid())
+                .role(userResponse.getRole())
+                .description("Successfully registered!")
+                .build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest, HttpServletResponse httpServletResponse) {
@@ -69,24 +70,38 @@ public class AuthenticationService {
         }
         User user = userRepo.findByUsername(authenticationRequest.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         String jwtToken = jwtService.generateToken(user);
-
+        revokeAllUserToken(user);
+        saveToken(user, jwtToken);
         httpServletResponse.addHeader(HEADER_STRING, TOKEN_PREFIX + jwtToken);
 
         return AuthenticationResponse.builder()
-
+                .uuid(user.getUuid())
+                .role(user.getRole())
+                .description("Successfully logged!")
                 .build();
     }
 
-    public void signoutAccount() {
-
+    private void saveToken(User user, String jwtToken) {
+        Token token = Token.builder()
+                .user(user)
+                .token(jwtToken)
+                .expired(false)
+                .build();
+        tokenRepo.save(token);
     }
 
-//    private void saveToken(User user, String jwtToken) {
-//        Token token = Token.builder()
-//                .user(user)
-//                .token(jwtToken)
-//                .expired(false)
-//                .build();
-//        tokenRepo.save(token);
-//    }
+    private void revokeAllUserToken(User user) {
+        List<Token> tokens = tokenRepo.findByUser(user);
+        if (tokens.isEmpty()) return;
+
+        tokens.forEach(token -> {
+            token.setExpired(true);
+        });
+
+        tokenRepo.saveAll(tokens);
+    }
+
+    public boolean isUsernameExists(String username) {
+        return userRepo.existsByUsername(username);
+    }
 }

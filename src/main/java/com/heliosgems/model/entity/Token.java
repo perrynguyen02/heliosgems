@@ -22,6 +22,6 @@ public class Token {
     public String tokenType = "bearer";
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "username", nullable = false)
+    @JoinColumn(name = "user_uuid", nullable = false)
     private User user;
 }
