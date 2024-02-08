@@ -1,29 +1,27 @@
 package com.heliosgems.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class Account implements UserDetails {
+public class User implements UserDetails {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID uuid;
     private String username;
     private String password;
     private String firstname;
@@ -32,13 +30,8 @@ public class Account implements UserDetails {
     private String phoneNumber;
     private String role;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "user")
     private List<Token> tokens;
-
-    @CreationTimestamp
-    private Date create_at;
-    @UpdateTimestamp
-    private Date update_at;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

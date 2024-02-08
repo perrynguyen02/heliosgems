@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -23,6 +22,6 @@ public class Token {
     public String tokenType = "bearer";
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "username", nullable = false)
-    private Account account;
+    @JoinColumn(name = "user_uuid", nullable = false)
+    private User user;
 }

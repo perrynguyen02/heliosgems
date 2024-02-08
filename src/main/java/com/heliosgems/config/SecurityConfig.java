@@ -1,6 +1,7 @@
 package com.heliosgems.config;
 
 import com.heliosgems.config.jwt.JwtRequestFilter;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.net.http.HttpRequest;
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +28,7 @@ public class SecurityConfig {
     private LogoutHandler logoutHandler;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf().disable()
                 .authorizeHttpRequests(
@@ -42,4 +46,5 @@ public class SecurityConfig {
                 );
         return httpSecurity.build();
     }
+
 }
