@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -22,6 +23,7 @@ import java.util.List;
 @Builder
 public class User implements UserDetails {
     @Id
+    private UUID uuid;
     private String username;
     private String password;
     private String firstname;
@@ -30,13 +32,8 @@ public class User implements UserDetails {
     private String phoneNumber;
     private String role;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "user")
     private List<Token> tokens;
-
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-    private List<Address> addresses;
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
