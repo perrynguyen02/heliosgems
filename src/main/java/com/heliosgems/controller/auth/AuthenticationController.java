@@ -1,6 +1,6 @@
 package com.heliosgems.controller.auth;
 
-import com.heliosgems.model.dto.AccountDto;
+import com.heliosgems.model.dto.UserDto;
 import com.heliosgems.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +15,7 @@ public class AuthenticationController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public void signupAcocunt(@RequestBody AccountDto accountDto) {
-        authenticationService.signupAccount(accountDto);
+    public void signupAcocunt(@RequestBody UserDto userDto) {
+        authenticationService.signupAccount(userDto);
     }
 }

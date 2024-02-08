@@ -1,6 +1,6 @@
 package com.heliosgems.config;
 
-import com.heliosgems.repository.AccountRepo;
+import com.heliosgems.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,11 +18,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
     @Autowired
-    private AccountRepo accountRepo;
+    private UserRepo userRepo;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> accountRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return username -> userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean
