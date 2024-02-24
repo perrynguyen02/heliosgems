@@ -3,6 +3,7 @@ package com.heliosgems.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -14,8 +15,11 @@ public class Product {
     private UUID uuid;
     private String name;
     private String description;
-    //đường dẫn đến hình ảnh sau này sẽ dùng aws s3 để lưu ảnh
-    private String image;
+
+//    đường dẫn đến hình ảnh sau này sẽ dùng aws s3 để lưu ảnh
+//    private String image;
+
+
     private Long price;
     private Long quantity;
     private String unit;
@@ -23,4 +27,7 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_uuid", nullable = false)
     private Category category;
+
+    private byte[] byteImg;
+    private MultipartFile file;
 }
